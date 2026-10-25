@@ -1,0 +1,91 @@
+@page
+@model VocabularyModel
+@{
+    ViewData["Title"] = "Vocabulary";
+}
+
+<h1>Vocabulary</h1>
+
+@if (TempData["Message"] is string message)
+{
+    <div class="alert alert-success">@message</div>
+}
+
+<div class="card mb-4"><div class="card-body">
+    <h5 class="card-title">Add a word</h5>
+    <form method="post" asp-page-handler="Add" class="row g-2 align-items-end">
+        <div class="col-md-2">
+            <label asp-for="Input.Hanzi" class="form-label"></label>
+            <input asp-for="Input.Hanzi" class="form-control hanzi" placeholder="你好" />
+            <span asp-validation-for="Input.Hanzi" class="text-danger small"></span>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="Input.Pinyin" class="form-label"></label>
+            <input asp-for="Input.Pinyin" class="form-control" placeholder="ni3 hao3 or nǐ hǎo" />
+            <span asp-validation-for="Input.Pinyin" class="text-danger small"></span>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="Input.English" class="form-label"></label>
+            <input asp-for="Input.English" class="form-control" placeholder="hello" />
+            <span asp-validation-for="Input.English" class="text-danger small"></span>
+        </div>
+        <div class="col-md-2">
+            <label asp-for="Input.Category" class="form-label"></label>
+            <input asp-for="Input.Category" class="form-control" list="categories" placeholder="General" />
+            <datalist id="categories">
+                @foreach (var c in Model.Categories) { <option value="@c"></option> }
+            </datalist>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-danger">Add</button>
+        </div>
+    </form>
+    <div class="form-text">Type pinyin with tone numbers (e.g. <code>xie4 xie5</code>, <code>lv4</code> for lǜ) and it's converted to tone marks.</div>
+</div></div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-6">
+        <input asp-for="Search" class="form-control" placeholder="Search characters, pinyin or English" />
+    </div>
+    <div class="col-md-4">
+        <select asp-for="Category" class="form-select" onchange="this.form.submit()">
+            <option value="">All categories</option>
+            @foreach (var c in Model.Categories) { <option value="@c">@c</option> }
+        </select>
+    </div>
+    <div class="col-md-2 d-grid">
+        <button type="submit" class="btn btn-outline-secondary">Filter</button>
+    </div>
+</form>
+
+<p class="text-muted">@Model.Words.Count word(s)</p>
+
+<div class="table-responsive">
+<table class="table table-hover align-middle">
+    <thead>
+        <tr><th>Characters</th><th>Pinyin</th><th>English</th><th>Category</th><th>Score</th><th></th></tr>
+    </thead>
+    <tbody>
+        @foreach (var w in Model.Words)
+        {
+            <tr>
+                <td class="hanzi fs-4">@w.Hanzi</td>
+                <td class="pinyin">@w.Pinyin <button type="button" class="btn btn-sm btn-link p-0 speak" data-text="@w.Hanzi" title="Listen">🔊</button></td>
+                <td>@w.English</td>
+                <td><span class="badge text-bg-light">@w.Category</span></td>
+                <td class="small text-muted">@w.CorrectCount ✓ / @w.IncorrectCount ✗</td>
+                <td class="text-end">
+                    <form method="post" asp-page-handler="Delete" asp-route-id="@w.Id" asp-route-search="@Model.Search" asp-route-category="@Model.Category"
+                          onsubmit="return confirm('Delete @w.Hanzi?')">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

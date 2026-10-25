@@ -1,0 +1,83 @@
+@page
+@model QuizModel
+@{
+    ViewData["Title"] = "Quiz";
+    var answered = Model.WasCorrect.HasValue;
+}
+
+<h1>Quiz</h1>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-auto">
+        <select asp-for="Mode" class="form-select" onchange="this.form.submit()">
+            <option value="@QuizMode.HanziToEnglish">Characters → English</option>
+            <option value="@QuizMode.EnglishToHanzi">English → Characters</option>
+            <option value="@QuizMode.HanziToPinyin">Characters → Pinyin</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <select asp-for="Category" class="form-select" onchange="this.form.submit()">
+            <option value="">All categories</option>
+            @foreach (var c in Model.Categories) { <option value="@c">@c</option> }
+        </select>
+    </div>
+</form>
+
+@if (Model.Question is not { } q)
+{
+    <div class="alert alert-info">No words to quiz. <a asp-page="/Vocabulary">Add some vocabulary</a> first.</div>
+}
+else
+{
+    <div class="card mx-auto quiz-card"><div class="card-body text-center">
+        <div class="@(Model.Mode == QuizMode.EnglishToHanzi ? "fs-2 my-4" : "hanzi-xl")">@Model.Prompt(q)</div>
+
+        @if (answered)
+        {
+            <div class="alert @(Model.WasCorrect == true ? "alert-success" : "alert-danger")">
+                @(Model.WasCorrect == true ? "正确! Correct!" : "Not quite.")
+                <span class="hanzi fs-4 ms-2">@q.Hanzi</span>
+                <span class="pinyin">@q.Pinyin</span> — @q.English
+                <button type="button" class="btn btn-sm btn-link p-0 speak" data-text="@q.Hanzi" title="Listen">🔊</button>
+            </div>
+        }
+
+        <form method="post">
+            <input type="hidden" name="questionId" value="@q.Id" />
+            <input type="hidden" name="optionIds" value="@string.Join(",", Model.Options.Select(o => o.Id))" />
+            <input type="hidden" asp-for="Mode" />
+            <input type="hidden" asp-for="Category" />
+            <div class="d-grid gap-2">
+                @foreach (var option in Model.Options)
+                {
+                    var css = "btn-outline-secondary";
+                    if (answered && option.Id == q.Id) css = "btn-success";
+                    else if (answered && option.Id == Model.ChosenId) css = "btn-danger";
+
+                    <button type="submit" name="chosenId" value="@option.Id"
+                            class="btn btn-lg @css @(Model.Mode == QuizMode.EnglishToHanzi ? "hanzi" : "")"
+                            disabled="@answered">
+                        @Model.OptionText(option)
+                    </button>
+                }
+            </div>
+        </form>
+
+        @if (answered)
+        {
+            <a class="btn btn-danger mt-3" id="next" asp-page="/Quiz" asp-route-mode="@Model.Mode" asp-route-category="@Model.Category" asp-route-previous="@q.Id">Next question (Enter) →</a>
+        }
+    </div></div>
+}
+
+@section Scripts {
+<script>
+    document.addEventListener('keydown', e => {
+        const next = document.getElementById('next');
+        if (next && e.key === 'Enter') { next.click(); return; }
+        const n = parseInt(e.key, 10);
+        const buttons = document.querySelectorAll('button[name="chosenId"]:not([disabled])');
+        if (n >= 1 && n <= buttons.length) buttons[n - 1].click();
+    });
+</script>
+}

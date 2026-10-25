@@ -1,0 +1,120 @@
+@page
+@model FlashcardsModel
+@{
+    ViewData["Title"] = "Flashcards";
+    var cards = Model.Words.Select(w => new { id = w.Id, hanzi = w.Hanzi, pinyin = w.Pinyin, english = w.English, weight = w.PracticeWeight });
+}
+
+<h1>Flashcards</h1>
+
+<form method="get" class="row g-2 mb-3 align-items-center">
+    <div class="col-auto">
+        <select asp-for="Category" class="form-select" onchange="this.form.submit()">
+            <option value="">All categories</option>
+            @foreach (var c in Model.Categories) { <option value="@c">@c</option> }
+        </select>
+    </div>
+    <div class="col-auto">
+        <select id="mode" class="form-select">
+            <option value="hanzi">Show characters first</option>
+            <option value="english">Show English first</option>
+        </select>
+    </div>
+    <div class="col-auto text-muted" id="progress"></div>
+</form>
+
+@if (Model.Words.Count == 0)
+{
+    <div class="alert alert-info">No words yet. <a asp-page="/Vocabulary">Add some vocabulary</a> first.</div>
+}
+else
+{
+    @Html.AntiForgeryToken()
+    <div class="flashcard mx-auto" id="card" tabindex="0" title="Click or press Space to flip">
+        <div class="flashcard-front" id="front"></div>
+        <div class="flashcard-back d-none" id="back"></div>
+    </div>
+
+    <div class="text-center mt-3">
+        <button type="button" class="btn btn-outline-secondary" id="listen">🔊 Listen</button>
+        <button type="button" class="btn btn-outline-secondary" id="flip">Flip (Space)</button>
+    </div>
+    <div class="text-center mt-2">
+        <button type="button" class="btn btn-outline-danger" id="missed" disabled>✗ Missed (1)</button>
+        <button type="button" class="btn btn-success" id="gotit" disabled>✓ Got it (2)</button>
+    </div>
+    <p class="text-center mt-3 text-muted small">Flip the card, then mark yourself. Cards you miss come back more often.</p>
+}
+
+@section Scripts {
+<script>
+(() => {
+    const cards = @Json.Serialize(cards);
+    if (!cards.length) return;
+
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    const el = id => document.getElementById(id);
+    let current = null, flipped = false, seen = 0, correct = 0;
+
+    function pick() {
+        // Weighted random, never the same card twice in a row.
+        const pool = cards.filter(c => c !== current);
+        const list = pool.length ? pool : cards;
+        const total = list.reduce((s, c) => s + Math.max(c.weight, 0.2), 0);
+        let roll = Math.random() * total;
+        for (const c of list) { roll -= Math.max(c.weight, 0.2); if (roll <= 0) return c; }
+        return list[list.length - 1];
+    }
+
+    function show() {
+        current = pick();
+        flipped = false;
+        const hanziFirst = el('mode').value === 'hanzi';
+        el('front').innerHTML = hanziFirst
+            ? `<div class="hanzi-xl"></div>`
+            : `<div class="fs-2"></div>`;
+        el('front').firstChild.textContent = hanziFirst ? current.hanzi : current.english;
+        el('back').innerHTML = `<div class="hanzi-xl"></div><div class="pinyin fs-3"></div><div class="fs-4"></div>`;
+        el('back').children[0].textContent = current.hanzi;
+        el('back').children[1].textContent = current.pinyin;
+        el('back').children[2].textContent = current.english;
+        el('front').classList.remove('d-none');
+        el('back').classList.add('d-none');
+        el('missed').disabled = el('gotit').disabled = true;
+        el('progress').textContent = seen ? `${correct}/${seen} correct this session` : '';
+    }
+
+    function flip() {
+        flipped = !flipped;
+        el('front').classList.toggle('d-none', flipped);
+        el('back').classList.toggle('d-none', !flipped);
+        el('missed').disabled = el('gotit').disabled = false;
+        if (flipped) speakChinese(current.hanzi);
+    }
+
+    function answer(ok) {
+        if (el('gotit').disabled) return;
+        seen++; if (ok) correct++;
+        current.weight = Math.max(current.weight + (ok ? -0.08 : 2), 0.2);
+        const body = new URLSearchParams({ id: current.id, correct: ok, __RequestVerificationToken: token });
+        fetch('?handler=Record', { method: 'POST', body });
+        show();
+    }
+
+    el('card').addEventListener('click', flip);
+    el('flip').addEventListener('click', flip);
+    el('listen').addEventListener('click', () => speakChinese(current.hanzi));
+    el('gotit').addEventListener('click', () => answer(true));
+    el('missed').addEventListener('click', () => answer(false));
+    el('mode').addEventListener('change', show);
+    document.addEventListener('keydown', e => {
+        if (e.target.tagName === 'SELECT') return;
+        if (e.code === 'Space') { e.preventDefault(); flip(); }
+        if (e.key === '1') answer(false);
+        if (e.key === '2') answer(true);
+    });
+
+    show();
+})();
+</script>
+}

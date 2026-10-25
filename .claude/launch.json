@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "learn-chinese",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "Learn Chinese Website/Learn Chinese Website.csproj", "--launch-profile", "http", "--no-launch-browser"],
+      "port": 5097
+    }
+  ]
+}

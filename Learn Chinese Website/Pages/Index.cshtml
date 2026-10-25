@@ -1,0 +1,62 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="text-center mb-4">
+    <h1 class="display-5">学中文 <small class="text-muted fs-4">Learn Chinese</small></h1>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card text-center h-100"><div class="card-body">
+            <div class="stat">@Model.TotalWords</div><div class="text-muted">words in your list</div>
+        </div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center h-100"><div class="card-body">
+            <div class="stat">@Model.WordsReviewed</div><div class="text-muted">words practised</div>
+        </div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center h-100"><div class="card-body">
+            <div class="stat">@Model.Accuracy%</div><div class="text-muted">quiz and flashcard accuracy</div>
+        </div></div>
+    </div>
+</div>
+
+<div class="row g-3">
+    @if (Model.WordOfTheDay is { } word)
+    {
+        <div class="col-md-6">
+            <div class="card h-100"><div class="card-body text-center">
+                <h5 class="card-title text-muted">Word of the day</h5>
+                <div class="hanzi-xl">@word.Hanzi</div>
+                <div class="pinyin fs-4">@word.Pinyin <button type="button" class="btn btn-sm btn-outline-secondary speak" data-text="@word.Hanzi" title="Listen">🔊</button></div>
+                <div class="fs-5">@word.English</div>
+            </div></div>
+        </div>
+    }
+    <div class="col-md-6">
+        <div class="card h-100"><div class="card-body">
+            <h5 class="card-title">Practice</h5>
+            <div class="d-grid gap-2">
+                <a class="btn btn-danger" asp-page="/Flashcards">Flashcards</a>
+                <a class="btn btn-outline-danger" asp-page="/Quiz">Quiz</a>
+                <a class="btn btn-outline-secondary" asp-page="/Vocabulary">Manage vocabulary</a>
+                <a class="btn btn-outline-secondary" asp-page="/Tones">Tones guide</a>
+            </div>
+            @if (Model.TroubleWords.Count > 0)
+            {
+                <h6 class="mt-4">Words you keep missing</h6>
+                <ul class="list-unstyled mb-0">
+                    @foreach (var w in Model.TroubleWords)
+                    {
+                        <li><span class="hanzi">@w.Hanzi</span> <span class="pinyin">@w.Pinyin</span> — @w.English <span class="text-muted small">(@w.IncorrectCount ✗ / @w.CorrectCount ✓)</span></li>
+                    }
+                </ul>
+            }
+        </div></div>
+    </div>
+</div>

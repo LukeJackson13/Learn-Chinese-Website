@@ -1,0 +1,42 @@
+@page
+@model PronunciationModel
+@{
+    ViewData["Title"] = "Pronunciation";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&display=swap" />
+    <link rel="stylesheet" href="~/css/pronunciation.css" asp-append-version="true" />
+}
+
+<div class="pron">
+    <header>
+        <h1>Pinyin Sound Cards</h1>
+        <p class="text-muted">Play says the sound three times. Slow stretches it out. Word plays it inside a real word. Real voice opens recordings by native speakers.</p>
+        <div class="controls"><label for="voiceSel">Voice</label><select id="voiceSel"></select></div>
+        <p class="note" id="voiceNote">Looking for a Chinese voice on this device…</p>
+    </header>
+
+    @foreach (var group in Model.Sections)
+    {
+        <section>
+            <h2>@group.Title</h2>
+            @foreach (var card in group.Cards)
+            {
+                <div class="sound-card">
+                    <div class="han">@card.Hanzi</div>
+                    <div class="info">
+                        <div class="py">@card.Pinyin<small>@card.Label</small></div>
+                        <div class="tip">@card.Tip</div>
+                        <div class="gloss">Word: <b>@card.Word</b> · @card.Gloss</div>
+                    </div>
+                    <div class="btns" data-say="@card.Hanzi" data-word="@card.Word"></div>
+                </div>
+            }
+        </section>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/pronunciation.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,39 @@
+/* Pinyin sound cards: big character left, pinyin + tip middle, play controls right. Scoped to .pron so it doesn't touch Bootstrap elsewhere. */
+.pron {
+  --card: #ffffff; --ink: #1d2a26; --muted: #5d6b66; --line: #dde3df;
+  --jade: #1f7a5c; --jade-soft: #e3f1ea; --seal: #b8452f;
+  --f-han: "Noto Serif TC", "PingFang TC", "Microsoft JhengHei", serif;
+  max-width: 680px; margin: 0 auto; padding-bottom: 48px; display: grid; gap: 28px; color: var(--ink);
+}
+.pron header h1 { font-size: 26px; margin: 0 0 4px; font-weight: 600; }
+.pron header p { margin: 0; }
+.pron .note { font-size: 13px; color: var(--muted); }
+.pron .note[data-warn] { color: var(--seal); }
+.pron section { display: grid; gap: 10px; }
+.pron h2 { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0; font-weight: 600; }
+.pron .sound-card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
+  display: grid; grid-template-columns: 64px 1fr minmax(0, 220px); gap: 16px; align-items: center; }
+.pron .han { font-family: var(--f-han); font-size: 44px; line-height: 1; text-align: center; font-weight: 500; }
+.pron .info { min-width: 0; }
+.pron .py { font-size: 20px; font-weight: 600; color: var(--jade); }
+.pron .py small { font-size: 13px; color: var(--muted); font-weight: 400; margin-left: 6px; }
+.pron .tip { font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+.pron .gloss { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+.pron .gloss b { font-family: var(--f-han); font-weight: 500; color: var(--ink); }
+.pron .btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.pron .btns button { font: inherit; font-size: 13px; font-weight: 600; border-radius: 999px; cursor: pointer;
+  border: 1.5px solid var(--jade); background: var(--jade-soft); color: var(--ink); padding: 8px 14px;
+  display: inline-flex; align-items: center; gap: 6px; }
+.pron .btns button.slow { background: transparent; }
+.pron .btns button:hover, .pron .btns button[aria-pressed="true"] { background: var(--jade); color: var(--card); }
+.pron .btns button:focus-visible { outline: 3px solid var(--seal); outline-offset: 2px; }
+.pron .controls { display: flex; gap: 8px; align-items: center; margin: 10px 0 4px; flex-wrap: wrap; }
+.pron .controls label { font-size: 13px; font-weight: 600; }
+.pron select { font: inherit; font-size: 13px; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); max-width: 100%; }
+.pron a.real { font-size: 13px; font-weight: 600; color: var(--jade); align-self: center; padding: 8px 4px; }
+.pron svg { width: 12px; height: 12px; fill: currentColor; }
+@media (max-width: 480px) {
+  .pron .sound-card { grid-template-columns: 52px 1fr; }
+  .pron .han { font-size: 38px; }
+  .pron .btns { grid-column: 1 / -1; }
+}
