@@ -485,3 +485,6 @@ $RECYCLE.BIN/
 
 # Personal study progress (each person gets the starter words on first run)
 App_Data/
+
+# React build output (built from client/ by npm run build)
+LearnChinese.Api/wwwroot/

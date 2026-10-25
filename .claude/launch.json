@@ -2,10 +2,16 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "learn-chinese",
+      "name": "api",
       "runtimeExecutable": "dotnet",
-      "runtimeArgs": ["run", "--project", "Learn Chinese Website/Learn Chinese Website.csproj", "--launch-profile", "http", "--no-launch-browser"],
+      "runtimeArgs": ["run", "--project", "LearnChinese.Api", "--launch-profile", "http", "--no-launch-browser"],
       "port": 5097
+    },
+    {
+      "name": "client",
+      "runtimeExecutable": "npm.cmd",
+      "runtimeArgs": ["--prefix", "client", "run", "dev"],
+      "port": 5173
     }
   ]
 }
