@@ -1,15 +1,17 @@
 using System.Text.Json;
+using Learn_Chinese_Website.Data;
 using Learn_Chinese_Website.Models;
 
 namespace Learn_Chinese_Website.Services
 {
     /// <summary>
-    /// Stores your vocabulary in App_Data/words.json. Seeds it with HSK 1 starter words on first run.
+    /// Stores your vocabulary in App_Data/words.json and adds any built-in word packs (see WordPacks) not yet added.
     /// </summary>
     public class VocabularyService
     {
         private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
         private readonly string _filePath;
+        private readonly string _packsPath;
         private readonly object _lock = new();
         private List<Word> _words;
 
@@ -18,6 +20,7 @@ namespace Learn_Chinese_Website.Services
             var dataDir = Path.Combine(env.ContentRootPath, "App_Data");
             Directory.CreateDirectory(dataDir);
             _filePath = Path.Combine(dataDir, "words.json");
+            _packsPath = Path.Combine(dataDir, "packs.json");
             _words = Load();
         }
 
@@ -92,71 +95,34 @@ namespace Learn_Chinese_Website.Services
 
         private List<Word> Load()
         {
-            if (File.Exists(_filePath))
+            var wordsExisted = File.Exists(_filePath);
+            var words = wordsExisted
+                ? JsonSerializer.Deserialize<List<Word>>(File.ReadAllText(_filePath)) ?? new List<Word>()
+                : new List<Word>();
+
+            // Track which built-in packs have been added, so new packs reach existing word lists
+            // and words you deleted from a pack don't come back.
+            var applied = File.Exists(_packsPath)
+                ? JsonSerializer.Deserialize<HashSet<string>>(File.ReadAllText(_packsPath)) ?? new HashSet<string>()
+                : wordsExisted ? new HashSet<string> { WordPacks.StarterName } : new HashSet<string>();
+
+            var changed = !wordsExisted;
+            foreach (var pack in WordPacks.All.Where(p => !applied.Contains(p.Name)))
             {
-                var json = File.ReadAllText(_filePath);
-                return JsonSerializer.Deserialize<List<Word>>(json) ?? new List<Word>();
+                var existing = words.Select(w => (w.Hanzi, w.Category)).ToHashSet();
+                words.AddRange(pack.ToWords().Where(w => !existing.Contains((w.Hanzi, w.Category))));
+                applied.Add(pack.Name);
+                changed = true;
             }
 
-            var seed = SeedWords();
-            File.WriteAllText(_filePath, JsonSerializer.Serialize(seed, JsonOptions));
-            return seed;
+            if (changed)
+            {
+                File.WriteAllText(_filePath, JsonSerializer.Serialize(words, JsonOptions));
+                File.WriteAllText(_packsPath, JsonSerializer.Serialize(applied, JsonOptions));
+            }
+            return words;
         }
 
         private void Save() => File.WriteAllText(_filePath, JsonSerializer.Serialize(_words, JsonOptions));
-
-        private static List<Word> SeedWords()
-        {
-            (string hanzi, string pinyin, string english, string category)[] seed =
-            {
-                ("你好", "nǐ hǎo", "hello", "Greetings"),
-                ("谢谢", "xièxie", "thank you", "Greetings"),
-                ("不客气", "bú kèqi", "you're welcome", "Greetings"),
-                ("再见", "zàijiàn", "goodbye", "Greetings"),
-                ("对不起", "duìbuqǐ", "sorry", "Greetings"),
-                ("没关系", "méi guānxi", "it doesn't matter", "Greetings"),
-                ("我", "wǒ", "I / me", "People"),
-                ("你", "nǐ", "you", "People"),
-                ("他", "tā", "he / him", "People"),
-                ("她", "tā", "she / her", "People"),
-                ("我们", "wǒmen", "we / us", "People"),
-                ("朋友", "péngyou", "friend", "People"),
-                ("老师", "lǎoshī", "teacher", "People"),
-                ("学生", "xuésheng", "student", "People"),
-                ("一", "yī", "one", "Numbers"),
-                ("二", "èr", "two", "Numbers"),
-                ("三", "sān", "three", "Numbers"),
-                ("四", "sì", "four", "Numbers"),
-                ("五", "wǔ", "five", "Numbers"),
-                ("六", "liù", "six", "Numbers"),
-                ("七", "qī", "seven", "Numbers"),
-                ("八", "bā", "eight", "Numbers"),
-                ("九", "jiǔ", "nine", "Numbers"),
-                ("十", "shí", "ten", "Numbers"),
-                ("是", "shì", "to be", "Verbs"),
-                ("有", "yǒu", "to have", "Verbs"),
-                ("吃", "chī", "to eat", "Verbs"),
-                ("喝", "hē", "to drink", "Verbs"),
-                ("去", "qù", "to go", "Verbs"),
-                ("来", "lái", "to come", "Verbs"),
-                ("看", "kàn", "to look / watch", "Verbs"),
-                ("说", "shuō", "to speak", "Verbs"),
-                ("喜欢", "xǐhuan", "to like", "Verbs"),
-                ("学习", "xuéxí", "to study", "Verbs"),
-                ("水", "shuǐ", "water", "Food & Drink"),
-                ("茶", "chá", "tea", "Food & Drink"),
-                ("米饭", "mǐfàn", "cooked rice", "Food & Drink"),
-                ("今天", "jīntiān", "today", "Time"),
-                ("明天", "míngtiān", "tomorrow", "Time"),
-                ("昨天", "zuótiān", "yesterday", "Time"),
-                ("中国", "Zhōngguó", "China", "Places"),
-                ("家", "jiā", "home / family", "Places"),
-                ("大", "dà", "big", "Adjectives"),
-                ("小", "xiǎo", "small", "Adjectives"),
-                ("好", "hǎo", "good", "Adjectives"),
-            };
-
-            return seed.Select(s => new Word { Hanzi = s.hanzi, Pinyin = s.pinyin, English = s.english, Category = s.category }).ToList();
-        }
     }
 }

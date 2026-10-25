@@ -12,6 +12,8 @@ dotnet run --project "Learn Chinese Website"
 
 Then open http://localhost:5097. Or open `Learn Chinese Website.sln` in Visual Studio and press F5.
 
-Your words and scores are saved to `Learn Chinese Website/App_Data/words.json`, which is created with starter HSK 1 words on first run and isn't checked in.
+Comes with ~340 TOCFL Band A words (traditional characters, Taiwan usage), split into A1 and A2 across five themes: self and family, numbers/dates/time, household, food and restaurants, and daily activities. Pick a theme from the category filter on Flashcards or Quiz.
+
+Your words and scores are saved to `Learn Chinese Website/App_Data/words.json`, which is created on first run and isn't checked in. Built-in word lists live in `Data/WordPacks.cs`.
 
 Listen buttons use the browser's built-in speech. Microsoft Edge on Windows has the best Chinese voices.
