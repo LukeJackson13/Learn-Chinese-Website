@@ -64,7 +64,7 @@ namespace LearnChinese.Api.Controllers
 
         // Records a flashcard or quiz result so weak words come up more often.
         [HttpPost("{id:guid}/answers")]
-        public IActionResult RecordAnswer(Guid id, AnswerRequest request)
+        public IActionResult RecordAnswer(Guid id, RecordAnswerRequest request)
         {
             if (_vocabulary.Get(id) == null) return NotFound();
             _vocabulary.RecordAnswer(id, request.Correct);
@@ -73,6 +73,7 @@ namespace LearnChinese.Api.Controllers
 
         public record CreateWordRequest([Required] string Hanzi, [Required] string Pinyin, [Required] string English, string? Category);
 
-        public record AnswerRequest(bool Correct);
+        // Request/response names must be unique across controllers: Swagger names schemas by type name.
+        public record RecordAnswerRequest(bool Correct);
     }
 }

@@ -26,18 +26,18 @@ namespace LearnChinese.Api.Controllers
 
         // Checks the answer on the server, records it, and returns the full word to show.
         [HttpPost("answer")]
-        public ActionResult<AnswerResult> Answer(AnswerRequest request)
+        public ActionResult<QuizAnswerResult> Answer(QuizAnswerRequest request)
         {
             var word = _vocabulary.Get(request.WordId);
             if (word == null) return NotFound();
 
             var correct = request.ChosenId == request.WordId;
             _vocabulary.RecordAnswer(word.Id, correct);
-            return new AnswerResult(correct, word);
+            return new QuizAnswerResult(correct, word);
         }
 
-        public record AnswerRequest(Guid WordId, Guid ChosenId);
+        public record QuizAnswerRequest(Guid WordId, Guid ChosenId);
 
-        public record AnswerResult(bool Correct, Word Word);
+        public record QuizAnswerResult(bool Correct, Word Word);
     }
 }

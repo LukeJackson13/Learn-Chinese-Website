@@ -36,3 +36,6 @@ app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 app.Run();
+
+// Lets the integration tests start the app with WebApplicationFactory<Program>.
+public partial class Program { }
