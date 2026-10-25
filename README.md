@@ -10,7 +10,7 @@ Comes with ~340 TOCFL Band A words (traditional characters, Taiwan usage), split
 
 | Folder | What's in it |
 |---|---|
-| `client/` | React app. Pages in `src/pages`, API calls in `src/api.ts`, text-to-speech in `src/speech.ts` |
+| `client/` | React app. Pages in `src/pages`, typed API client in `src/api.ts` (types generated into `src/generated/`), text-to-speech in `src/speech.ts` |
 | `LearnChinese.Api/` | Web API. Controllers in `Controllers/`, logic in `Services/`, built-in word lists in `Data/WordPacks.cs` |
 | `LearnChinese.Api.Tests/` | xUnit tests for the pinyin converter, vocabulary storage and quiz logic |
 
@@ -42,6 +42,20 @@ npm run dev
 ```
 
 **Tests:** `dotnet test`
+
+## Generated API types
+
+The React app's API types aren't written by hand. `client/src/generated/api.d.ts` is generated from the API's Swagger document by [openapi-typescript](https://openapi-ts.dev), and `client/src/api.ts` uses [openapi-fetch](https://openapi-ts.dev/openapi-fetch/), so URLs, parameters, request bodies and responses are all type-checked against the C# back end.
+
+After changing a controller or model, with the API running on port 5097:
+
+```
+cd client
+npm run generate:api
+npm run build
+```
+
+Any React code that no longer matches the API then fails the build. The generator runs through `npx` at a pinned version because it doesn't yet support TypeScript 6 as a project dependency.
 
 ## API
 

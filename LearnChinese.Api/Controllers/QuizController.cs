@@ -18,6 +18,8 @@ namespace LearnChinese.Api.Controllers
         }
 
         [HttpGet("question")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)] // no words to quiz
         public ActionResult<QuizQuestion> GetQuestion(QuizMode mode = QuizMode.HanziToEnglish, string? category = null, Guid? previous = null)
         {
             var question = _quiz.NextQuestion(mode, category, previous);
@@ -26,6 +28,8 @@ namespace LearnChinese.Api.Controllers
 
         // Checks the answer on the server, records it, and returns the full word to show.
         [HttpPost("answer")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<QuizAnswerResult> Answer(QuizAnswerRequest request)
         {
             var word = _vocabulary.Get(request.WordId);

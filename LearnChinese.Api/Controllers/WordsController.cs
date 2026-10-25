@@ -41,6 +41,8 @@ namespace LearnChinese.Api.Controllers
         public IEnumerable<string> GetCategories() => _vocabulary.GetCategories();
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Word> AddWord(CreateWordRequest request)
         {
             var word = new Word
@@ -55,6 +57,8 @@ namespace LearnChinese.Api.Controllers
         }
 
         [HttpDelete("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult DeleteWord(Guid id)
         {
             if (_vocabulary.Get(id) == null) return NotFound();
@@ -64,6 +68,8 @@ namespace LearnChinese.Api.Controllers
 
         // Records a flashcard or quiz result so weak words come up more often.
         [HttpPost("{id:guid}/answers")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult RecordAnswer(Guid id, RecordAnswerRequest request)
         {
             if (_vocabulary.Get(id) == null) return NotFound();

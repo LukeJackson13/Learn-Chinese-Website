@@ -1,32 +1,37 @@
-import type { AnswerResult, NewWord, QuizMode, QuizQuestion, Stats, Word } from './types'
+import createClient from 'openapi-fetch'
+import type { paths } from './generated/api'
+import type { NewWord, QuizMode } from './types'
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`/api${path}`, {
-    ...init,
-    headers: init?.body ? { 'Content-Type': 'application/json' } : undefined,
-  })
-  if (!response.ok) throw new Error(`${init?.method ?? 'GET'} ${path} failed: ${response.status}`)
-  return (response.status === 204 ? null : await response.json()) as T
+// Typed client generated from the API's swagger.json: URLs, query/path parameters,
+// request bodies and responses are all checked against the C# back end at compile time.
+const client = createClient<paths>()
+
+// openapi-fetch returns { data, error, response } instead of throwing; pages expect a throw on failure.
+async function unwrap<T>(call: Promise<{ data?: T; error?: unknown; response: Response }>): Promise<T> {
+  const { data, error, response } = await call
+  if (error !== undefined || !response.ok) throw new Error(`${response.url} failed: ${response.status}`)
+  return data as T
 }
 
-function query(params: Record<string, string | undefined | null>) {
-  const entries = Object.entries(params).filter((e): e is [string, string] => !!e[1])
-  return entries.length ? `?${new URLSearchParams(entries)}` : ''
-}
+// Empty strings mean "no filter"; leave them out of the URL.
+const optional = (value?: string) => value || undefined
 
 export const api = {
-  getStats: () => request<Stats>('/stats'),
+  getStats: () => unwrap(client.GET('/api/stats')),
 
-  getWords: (category?: string, search?: string) => request<Word[]>(`/words${query({ category, search })}`),
-  getCategories: () => request<string[]>('/words/categories'),
-  addWord: (word: NewWord) => request<Word>('/words', { method: 'POST', body: JSON.stringify(word) }),
-  deleteWord: (id: string) => request<null>(`/words/${id}`, { method: 'DELETE' }),
+  getWords: (category?: string, search?: string) =>
+    unwrap(client.GET('/api/words', { params: { query: { category: optional(category), search: optional(search) } } })),
+  getCategories: () => unwrap(client.GET('/api/words/categories')),
+  addWord: (word: NewWord) => unwrap(client.POST('/api/words', { body: word })),
+  deleteWord: (id: string) => unwrap(client.DELETE('/api/words/{id}', { params: { path: { id } } })),
   recordAnswer: (id: string, correct: boolean) =>
-    request<null>(`/words/${id}/answers`, { method: 'POST', body: JSON.stringify({ correct }) }),
+    unwrap(client.POST('/api/words/{id}/answers', { params: { path: { id } }, body: { correct } })),
 
-  // Returns null when there are no words to quiz.
-  getQuestion: (mode: QuizMode, category?: string, previous?: string) =>
-    request<QuizQuestion | null>(`/quiz/question${query({ mode, category, previous })}`),
+  // Resolves to null when there are no words to quiz (the API answers 204 No Content).
+  getQuestion: async (mode: QuizMode, category?: string, previous?: string) =>
+    (await unwrap(client.GET('/api/quiz/question', {
+      params: { query: { mode, category: optional(category), previous: optional(previous) } },
+    }))) ?? null,
   answerQuestion: (wordId: string, chosenId: string) =>
-    request<AnswerResult>('/quiz/answer', { method: 'POST', body: JSON.stringify({ wordId, chosenId }) }),
+    unwrap(client.POST('/api/quiz/answer', { body: { wordId, chosenId } })),
 }
