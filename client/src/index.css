@@ -121,14 +121,52 @@ nav { display: flex; gap: 4px; flex-wrap: wrap; }
 .btn-success .key-hint, .btn-danger:disabled .key-hint { color: inherit; }
 .next { margin-top: 16px; }
 
-/* Tones */
+/* Tones: one colour per tone, darker in light mode so the pinyin text stays readable */
+:root { --tone-1: #2563eb; --tone-2: #15803d; --tone-3: #b45309; --tone-4: #dc2626; --tone-5: #6b7671; }
+@media (prefers-color-scheme: dark) {
+  :root { --tone-1: #60a5fa; --tone-2: #4ade80; --tone-3: #fbbf24; --tone-4: #f87171; --tone-5: #9aa8a3; }
+}
 .tone { border-top-width: 4px; }
-.tone-1 { border-top-color: #3b82f6; }
-.tone-2 { border-top-color: #22a06b; }
-.tone-3 { border-top-color: #f59e0b; }
-.tone-4 { border-top-color: #e5484d; }
-.tone-5 { border-top-color: #8b9691; }
+.tone-1 { border-top-color: var(--tone-1); }
+.tone-2 { border-top-color: var(--tone-2); }
+.tone-3 { border-top-color: var(--tone-3); }
+.tone-4 { border-top-color: var(--tone-4); }
+.tone-5 { border-top-color: var(--tone-5); }
+.tone-text-1 { color: var(--tone-1); }
+.tone-text-2 { color: var(--tone-2); }
+.tone-text-3 { color: var(--tone-3); }
+.tone-text-4 { color: var(--tone-4); }
+.tone-text-5 { color: var(--tone-5); }
+.tone-bg-1 { background: var(--tone-1); }
+.tone-bg-2 { background: var(--tone-2); }
+.tone-bg-3 { background: var(--tone-3); }
+.tone-bg-4 { background: var(--tone-4); }
+.tone-bg-5 { background: var(--tone-5); }
 .tone-mark { font-size: 48px; font-weight: 600; }
+
+/* Tone pairs grid */
+.section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+.section-head .section-title { margin: 0; }
+.tone-pairs { width: 100%; min-width: 760px; border-collapse: collapse; table-layout: fixed; background: var(--card); }
+.tone-pairs th, .tone-pairs td { border: 1px solid var(--line); }
+.tone-pairs thead th { background: var(--jade); color: var(--card); font-weight: 600; font-size: 14px; padding: 12px 8px; text-align: center; }
+.tone-pairs thead th:first-child, .tone-pairs tbody th { width: 110px; }
+.tone-pairs tbody th { text-align: left; font-weight: 600; font-size: 14px; padding: 12px; }
+.tone-pairs td { padding: 0; vertical-align: top; }
+.tone-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+.tone-pairs thead .tone-dot { box-shadow: 0 0 0 1.5px var(--card); }
+.pair { display: grid; gap: 4px; width: 100%; height: 100%; min-height: 96px; padding: 14px 12px; text-align: left;
+  font: inherit; color: var(--ink); background: transparent; border: 0; cursor: pointer; }
+.pair:hover { background: var(--jade-soft); }
+.pair[aria-pressed="true"] { background: var(--jade-soft); box-shadow: inset 3px 0 0 var(--jade); }
+.pair:focus-visible { outline: 3px solid var(--seal); outline-offset: -3px; }
+.pair-word { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.pair-hanzi { font-size: 22px; }
+.pair-pinyin { font-size: 13px; font-weight: 600; }
+.pair-play { font-size: 10px; color: var(--jade); border: 1.5px solid var(--jade); border-radius: 50%;
+  width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; padding-left: 2px; }
+.pair-english { font-size: 13px; color: var(--muted); }
+.pair-note { font-size: 11.5px; color: var(--tone-2); font-style: italic; }
 
 /* Pronunciation sound cards */
 .pron { max-width: 680px; margin: 0 auto; }

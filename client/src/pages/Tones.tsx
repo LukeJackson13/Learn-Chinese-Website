@@ -1,4 +1,5 @@
 import { SpeakButton } from '../components/SpeakButton'
+import { TonePairs } from '../components/TonePairs'
 
 const tones = [
   { n: 1, name: 'First tone', mark: 'ā', description: 'High and flat. Hold it steady, like singing one note.', pinyin: 'mā', hanzi: '媽', meaning: 'mother' },
@@ -26,6 +27,8 @@ export function Tones() {
           </div>
         ))}
       </div>
+
+      <TonePairs />
 
       <h2 className="section-title">Tone change rules</h2>
       <ul>
