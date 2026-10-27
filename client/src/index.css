@@ -168,6 +168,35 @@ nav { display: flex; gap: 4px; flex-wrap: wrap; }
 .pair-english { font-size: 13px; color: var(--muted); }
 .pair-note { font-size: 11.5px; color: var(--tone-2); font-style: italic; }
 
+/* Pinyin finals */
+.subsection-title { font-size: 17px; margin: 28px 0 12px; }
+.finals-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+.finals-groups { display: grid; gap: 16px; }
+.finals-group-desc { margin: 2px 0 8px; }
+.finals-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.final-chip { font: inherit; font-size: 15px; font-weight: 600; min-width: 52px; padding: 7px 12px; border-radius: 6px; cursor: pointer;
+  background: var(--jade); color: var(--card); border: 1.5px solid var(--jade); }
+.final-chip:hover { filter: brightness(1.1); }
+.final-chip[aria-pressed="true"] { background: var(--card); color: var(--jade); box-shadow: 0 0 0 2px var(--jade); }
+.final-chip:focus-visible { outline: 3px solid var(--seal); outline-offset: 2px; }
+.final-detail { position: sticky; top: 16px; margin-bottom: 0; }
+.final-detail-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.final-big { font-size: 44px; font-weight: 600; color: var(--jade); line-height: 1.1; }
+.final-tip { font-size: 15px; margin: 10px 0 14px; }
+.final-examples { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.final-examples.inline { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+.final-example { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.final-example-hanzi { font-size: 24px; }
+.final-example-pinyin { font-weight: 600; }
+.final-spelling { font-size: 13.5px; margin: 14px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--jade-soft); }
+.finals-rules { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+.finals-rules > .card { margin-bottom: 0; }
+.finals-rules h4 { margin-bottom: 6px; }
+@media (max-width: 760px) {
+  .finals-layout { grid-template-columns: 1fr; }
+  .final-detail { position: static; }
+}
+
 /* Pronunciation sound cards */
 .pron { max-width: 680px; margin: 0 auto; }
 .pron-section { display: grid; gap: 10px; margin-top: 28px; }

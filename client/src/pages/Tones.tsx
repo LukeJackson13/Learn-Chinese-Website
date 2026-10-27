@@ -1,3 +1,4 @@
+import { PinyinFinals } from '../components/PinyinFinals'
 import { SpeakButton } from '../components/SpeakButton'
 import { TonePairs } from '../components/TonePairs'
 
@@ -29,6 +30,8 @@ export function Tones() {
       </div>
 
       <TonePairs />
+
+      <PinyinFinals />
 
       <h2 className="section-title">Tone change rules</h2>
       <ul>
