@@ -10,6 +10,7 @@ const sections = [
   { to: '/vocabulary', icon: '詞', title: 'Vocabulary', description: 'Browse the TOCFL Band A list by theme and add your own words.' },
   { to: '/tones', icon: '聲', title: 'Tones', description: 'The four tones, tone pairs, pinyin finals and tone change rules.' },
   { to: '/pronunciation', icon: '音', title: 'Pronunciation', description: 'Every initial and final with audio, for self-study.' },
+  { to: '/sounds', icon: '電', title: 'Sound families', description: 'Characters that sound alike, like 點 電 店 殿, with the words they build.' },
 ]
 
 // Outside apps. Plain https links open the installed app on a phone and the website on a PC.

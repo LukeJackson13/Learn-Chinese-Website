@@ -5,6 +5,8 @@ import { Home } from './pages/Home'
 import { NotFound } from './pages/NotFound'
 import { Pronunciation } from './pages/Pronunciation'
 import { Quiz } from './pages/Quiz'
+import { SoundFamily } from './pages/SoundFamily'
+import { Sounds } from './pages/Sounds'
 import { Tones } from './pages/Tones'
 import { Vocabulary } from './pages/Vocabulary'
 
@@ -18,6 +20,8 @@ export default function App() {
         <Route path="quiz" element={<Quiz />} />
         <Route path="tones" element={<Tones />} />
         <Route path="pronunciation" element={<Pronunciation />} />
+        <Route path="sounds" element={<Sounds />} />
+        <Route path="sounds/:id" element={<SoundFamily />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
