@@ -159,6 +159,23 @@ nav { display: flex; gap: 4px; flex-wrap: wrap; }
 .tone-border-4 { border-top: 4px solid var(--tone-4); }
 .tone-border-5 { border-top: 4px solid var(--tone-5); }
 
+/* Lesson dialogues */
+.dialogue-toolbar { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0 0 16px; font-size: 14px; }
+.dialogue-toolbar label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.dialogue .section-head { margin: 0 0 12px; }
+.dialogue .section-head .card-title { margin: 0; }
+.dialogue-lines { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.dialogue-line { display: grid; justify-items: start; gap: 4px; max-width: 85%; }
+.dialogue-line-right { justify-self: end; justify-items: end; text-align: right; }
+.dialogue-speaker { font-size: 13px; }
+.dialogue-bubble { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; display: grid; gap: 4px; }
+.dialogue-line-right .dialogue-bubble { background: var(--jade-soft); }
+.dialogue-line.is-playing .dialogue-bubble { border-color: var(--jade); box-shadow: 0 0 0 2px var(--jade); }
+.dialogue-hanzi { font-size: 24px; line-height: 1.4; }
+.dialogue-actions { display: flex; gap: 4px; }
+.dialogue-line-right .dialogue-actions { justify-content: flex-end; }
+@media (max-width: 520px) { .dialogue-line { max-width: 100%; } }
+
 /* Sound families */
 .family-card-sound { font-size: 22px; font-weight: 600; }
 .family-card-chars { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 32px; line-height: 1.2; }

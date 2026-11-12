@@ -89,6 +89,10 @@ export function speak(text: string, { rate = 0.8, warmUp, onEnd }: SpeakOptions 
   }, firstTime ? 600 : 150)
 }
 
+export function stopSpeaking() {
+  synth?.cancel()
+}
+
 // Calls back whenever the browser's voice list loads or changes.
 export function onVoicesChanged(callback: () => void): () => void {
   if (!synth) return () => {}

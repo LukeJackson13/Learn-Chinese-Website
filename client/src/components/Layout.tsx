@@ -7,6 +7,7 @@ const links = [
   { to: '/quiz', label: 'Quiz' },
   { to: '/tones', label: 'Tones' },
   { to: '/pronunciation', label: 'Pronunciation' },
+  { to: '/lessons', label: 'Lessons' },
   { to: '/sounds', label: 'Sounds' },
 ]
 
