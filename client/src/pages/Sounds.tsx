@@ -10,14 +10,14 @@ export function Sounds() {
         Many characters share a sound. Learning them together helps you tell them apart by tone, meaning and the words they build.
       </p>
 
-      <div className="grid grid-3">
+      <div className="grid grid-2">
         {soundFamilies.map(f => {
           const wordCount = f.characters.reduce((n, c) => n + c.words.length, 0)
           return (
-            <Link key={f.id} to={`/sounds/${f.id}`} className="card link-card sound-card">
+            <Link key={f.id} to={`/sounds/${f.id}`} className="card link-card family-card">
               <span className="link-card-body">
-                <span className="sound-card-sound">{f.sound}</span>
-                <span className="sound-card-chars hanzi">
+                <span className="family-card-sound">{f.sound}</span>
+                <span className="family-card-chars hanzi">
                   {f.characters.map(c => <span key={c.hanzi} className={`tone-text-${toneOf(c.pinyin)}`}>{c.hanzi}</span>)}
                 </span>
                 <span className="small muted">{f.summary}</span>

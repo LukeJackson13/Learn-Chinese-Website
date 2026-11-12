@@ -160,8 +160,8 @@ nav { display: flex; gap: 4px; flex-wrap: wrap; }
 .tone-border-5 { border-top: 4px solid var(--tone-5); }
 
 /* Sound families */
-.sound-card-sound { font-size: 22px; font-weight: 600; }
-.sound-card-chars { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 32px; line-height: 1.2; }
+.family-card-sound { font-size: 22px; font-weight: 600; }
+.family-card-chars { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 32px; line-height: 1.2; }
 .sound-char-head { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
 .sound-char-hanzi { font-size: 56px; line-height: 1; }
 .sound-char-pinyin { font-size: 20px; font-weight: 600; }
