@@ -1,61 +1,107 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
-import { lessons, speakerNames, type DialogueScene } from '../data/lessons'
+import { bookTitle, lessons, speakerNames, type DialogueScene, type PracticeSection, type PracticeWord } from '../data/lessons'
 import { speak, stopSpeaking } from '../speech'
 import { NotFound } from './NotFound'
 
 const NORMAL_RATE = 0.8
 const SLOW_RATE = 0.5
 
-interface Playing {
-  scene: number
-  line: number
+// Something that can be spoken, with a key so the page can highlight it while it plays.
+interface PlayItem {
+  key: string
+  text: string
 }
 
-interface SceneProps {
-  scene: DialogueScene
-  index: number
-  playing: Playing | null
-  playingScene: boolean
+interface Playback {
+  playingKey: string | null
+  runningList: string | null
   showPinyin: boolean
   showEnglish: boolean
-  onPlayLine: (line: number, rate: number) => void
-  onPlayScene: () => void
-  onStop: () => void
+  playOne: (item: PlayItem, rate: number) => void
+  playList: (listKey: string, items: PlayItem[]) => void
+  stop: () => void
 }
 
-function Scene({ scene, index, playing, playingScene, showPinyin, showEnglish, onPlayLine, onPlayScene, onStop }: SceneProps) {
+function PlayListButton({ listKey, items, playback }: { listKey: string; items: PlayItem[]; playback: Playback }) {
+  return playback.runningList === listKey
+    ? <button type="button" className="btn btn-sm" onClick={playback.stop}>■ Stop</button>
+    : <button type="button" className="btn btn-sm btn-primary" onClick={() => playback.playList(listKey, items)}>▶ Play all</button>
+}
+
+function Scene({ scene, index, playback }: { scene: DialogueScene; index: number; playback: Playback }) {
   const firstSpeaker = scene.lines[0].speaker
+  const items = scene.lines.map((l, i) => ({ key: `scene${index}-${i}`, text: l.hanzi }))
   return (
     <section className="card dialogue">
       <div className="section-head">
-        <h2 className="card-title">{index + 1}. {scene.title}</h2>
-        {playingScene
-          ? <button type="button" className="btn btn-sm" onClick={onStop}>■ Stop</button>
-          : <button type="button" className="btn btn-sm btn-primary" onClick={onPlayScene}>▶ Play dialogue</button>}
+        <h3 className="card-title">{index + 1}. {scene.title}</h3>
+        <PlayListButton listKey={`scene${index}`} items={items} playback={playback} />
       </div>
       <ol className="dialogue-lines">
-        {scene.lines.map((l, i) => {
-          const active = playing?.scene === index && playing.line === i
-          return (
-            <li key={i} className={`dialogue-line${l.speaker === firstSpeaker ? '' : ' dialogue-line-right'}${active ? ' is-playing' : ''}`}>
-              <span className="dialogue-speaker">
-                <span className="hanzi">{l.speaker}</span>
-                {speakerNames[l.speaker] && <span className="muted"> {speakerNames[l.speaker]}</span>}
-              </span>
-              <div className="dialogue-bubble">
-                <div className="hanzi dialogue-hanzi">{l.hanzi}</div>
-                {showPinyin && <div className="pinyin">{l.pinyin}</div>}
-                {showEnglish && <div className="small muted">{l.english}</div>}
-                <div className="dialogue-actions">
-                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => onPlayLine(i, NORMAL_RATE)} aria-label={`Play ${l.hanzi}`}>🔊 Listen</button>
-                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => onPlayLine(i, SLOW_RATE)} aria-label={`Play ${l.hanzi} slowly`}>🐢 Slow</button>
-                </div>
+        {scene.lines.map((l, i) => (
+          <li key={i} className={`dialogue-line${l.speaker === firstSpeaker ? '' : ' dialogue-line-right'}${playback.playingKey === items[i].key ? ' is-playing' : ''}`}>
+            <span className="dialogue-speaker">
+              <span className="hanzi">{l.speaker}</span>
+              {speakerNames[l.speaker] && <span className="muted"> {speakerNames[l.speaker]}</span>}
+            </span>
+            <div className="dialogue-bubble">
+              <div className="hanzi dialogue-hanzi">{l.hanzi}</div>
+              {playback.showPinyin && <div className="pinyin">{l.pinyin}</div>}
+              {playback.showEnglish && <div className="small muted">{l.english}</div>}
+              <div className="dialogue-actions">
+                <button type="button" className="btn btn-ghost btn-sm" onClick={() => playback.playOne(items[i], NORMAL_RATE)} aria-label={`Play ${l.hanzi}`}>🔊 Listen</button>
+                <button type="button" className="btn btn-ghost btn-sm" onClick={() => playback.playOne(items[i], SLOW_RATE)} aria-label={`Play ${l.hanzi} slowly`}>🐢 Slow</button>
               </div>
-            </li>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
+function WordTile({ word, item, playback, head }: { word: PracticeWord; item: PlayItem; playback: Playback; head?: boolean }) {
+  return (
+    <div className={`word-tile${head ? ' word-tile-head' : ''}${playback.playingKey === item.key ? ' is-playing' : ''}`}>
+      <button type="button" className="word-tile-play" onClick={() => playback.playOne(item, NORMAL_RATE)} aria-label={`Play ${word.hanzi}, ${word.english}`}>
+        <span className="hanzi word-tile-hanzi">{word.hanzi}</span>
+        {playback.showPinyin && <span className="pinyin">{word.pinyin}</span>}
+        {playback.showEnglish && <span className="small muted">{word.english}</span>}
+      </button>
+      <button type="button" className="btn btn-ghost btn-sm word-tile-slow" onClick={() => playback.playOne(item, SLOW_RATE)} aria-label={`Play ${word.hanzi} slowly`} title="Play slowly">🐢</button>
+    </div>
+  )
+}
+
+function Practice({ section, index, playback }: { section: PracticeSection; index: number; playback: Playback }) {
+  return (
+    <section>
+      <h2 className="section-title"><span className="hanzi">{section.title}</span> · {section.english}</h2>
+      <p className="muted">{section.description}</p>
+      {section.examples?.map((e, i) => (
+        <div key={i} className="card practice-example">
+          <WordTile word={e} item={{ key: `p${index}-ex${i}`, text: e.hanzi }} playback={playback} />
+        </div>
+      ))}
+      <div className="grid grid-2">
+        {section.groups.map((g, gi) => {
+          const prefix = `p${index}-g${gi}`
+          const headItem = { key: `${prefix}-head`, text: g.head.hanzi }
+          const items = g.words.map((w, wi) => ({ key: `${prefix}-${wi}`, text: w.hanzi }))
+          return (
+            <div key={gi} className="card word-group">
+              <div className="word-group-head">
+                <WordTile word={g.head} item={headItem} playback={playback} head />
+                <PlayListButton listKey={prefix} items={[headItem, ...items]} playback={playback} />
+              </div>
+              <div className="word-tiles">
+                {g.words.map((w, wi) => <WordTile key={wi} word={w} item={items[wi]} playback={playback} />)}
+              </div>
+            </div>
           )
         })}
-      </ol>
+      </div>
     </section>
   )
 }
@@ -66,8 +112,8 @@ export function LessonPage() {
   const [showPinyin, setShowPinyin] = useState(true)
   const [showEnglish, setShowEnglish] = useState(true)
   const [slow, setSlow] = useState(false)
-  const [playing, setPlaying] = useState<Playing | null>(null)
-  const [sceneRunning, setSceneRunning] = useState<number | null>(null)
+  const [playingKey, setPlayingKey] = useState<string | null>(null)
+  const [runningList, setRunningList] = useState<string | null>(null)
   // Bumped whenever playback starts or stops, so callbacks from an older run are ignored.
   const run = useRef(0)
 
@@ -75,41 +121,43 @@ export function LessonPage() {
 
   if (!lesson) return <NotFound />
 
-  function stop() {
-    run.current++
-    stopSpeaking()
-    setPlaying(null)
-    setSceneRunning(null)
-  }
-
-  function playLine(scene: number, line: number, rate: number) {
-    const current = ++run.current
-    const text = lesson!.scenes[scene].lines[line].hanzi
-    setSceneRunning(null)
-    setPlaying({ scene, line })
-    speak(text, { rate, warmUp: text, onEnd: () => { if (run.current === current) setPlaying(null) } })
-  }
-
-  function playScene(scene: number) {
-    const current = ++run.current
-    const lines = lesson!.scenes[scene].lines
-    const rate = slow ? SLOW_RATE : NORMAL_RATE
-    setSceneRunning(scene)
-    const next = (i: number) => {
-      if (run.current !== current) return
-      if (i >= lines.length) {
-        setPlaying(null)
-        setSceneRunning(null)
-        return
+  const playback: Playback = {
+    playingKey,
+    runningList,
+    showPinyin,
+    showEnglish,
+    playOne(item, rate) {
+      const current = ++run.current
+      setRunningList(null)
+      setPlayingKey(item.key)
+      speak(item.text, { rate, warmUp: item.text, onEnd: () => { if (run.current === current) setPlayingKey(null) } })
+    },
+    playList(listKey, items) {
+      const current = ++run.current
+      const rate = slow ? SLOW_RATE : NORMAL_RATE
+      setRunningList(listKey)
+      const next = (i: number) => {
+        if (run.current !== current) return
+        if (i >= items.length) {
+          setPlayingKey(null)
+          setRunningList(null)
+          return
+        }
+        setPlayingKey(items[i].key)
+        speak(items[i].text, {
+          rate,
+          warmUp: i === 0 ? items[i].text : undefined,
+          onEnd: () => { if (run.current === current) setTimeout(() => next(i + 1), 700) },
+        })
       }
-      setPlaying({ scene, line: i })
-      speak(lines[i].hanzi, {
-        rate,
-        warmUp: i === 0 ? lines[i].hanzi : undefined,
-        onEnd: () => { if (run.current === current) setTimeout(() => next(i + 1), 700) },
-      })
-    }
-    next(0)
+      next(0)
+    },
+    stop() {
+      run.current++
+      stopSpeaking()
+      setPlayingKey(null)
+      setRunningList(null)
+    },
   }
 
   return (
@@ -119,23 +167,22 @@ export function LessonPage() {
         Lesson {lesson.number} <span className="hanzi">{lesson.title}</span> <small className="muted">{lesson.english}</small>
       </h1>
       <p className="lead">
-        Play a dialogue to hear it all the way through, then go line by line: listen, use 🐢 Slow if you need it, and repeat out loud.
-        Hide the pinyin or English to test yourself.
+        Listen to each line or word, use 🐢 if you need it slower, and repeat it out loud. ▶ Play all goes through a whole
+        dialogue or group with a pause after each one for you to repeat. Hide the pinyin or English to test yourself.
       </p>
 
       <div className="dialogue-toolbar">
         <label><input type="checkbox" checked={showPinyin} onChange={e => setShowPinyin(e.target.checked)} /> Show pinyin</label>
         <label><input type="checkbox" checked={showEnglish} onChange={e => setShowEnglish(e.target.checked)} /> Show English</label>
-        <label><input type="checkbox" checked={slow} onChange={e => setSlow(e.target.checked)} /> Play dialogues slowly</label>
+        <label><input type="checkbox" checked={slow} onChange={e => setSlow(e.target.checked)} /> Play all slowly</label>
       </div>
 
-      {lesson.scenes.map((scene, i) => (
-        <Scene key={scene.title} scene={scene} index={i} playing={playing} playingScene={sceneRunning === i}
-               showPinyin={showPinyin} showEnglish={showEnglish}
-               onPlayLine={(line, rate) => playLine(i, line, rate)} onPlayScene={() => playScene(i)} onStop={stop} />
-      ))}
+      <h2 className="section-title"><span className="hanzi">情境對話</span> · Dialogue</h2>
+      {lesson.scenes.map((scene, i) => <Scene key={scene.title} scene={scene} index={i} playback={playback} />)}
 
-      <p className="small muted">From {lesson.book}.</p>
+      {lesson.practice?.map((section, i) => <Practice key={section.title} section={section} index={i} playback={playback} />)}
+
+      <p className="small muted">From {bookTitle(lesson.book)}, Lesson {String(lesson.number).padStart(2, '0')}.</p>
     </>
   )
 }
