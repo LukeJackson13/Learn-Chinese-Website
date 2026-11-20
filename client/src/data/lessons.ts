@@ -19,10 +19,29 @@ export interface PracticeWord {
   english: string
 }
 
-// A headword (like 豬 zhū) and words built from it, or a themed word list (like drinks).
+// A headword (like 豬 zhū) and words built from it, a themed word list (like drinks), or a labelled drill.
 export interface WordGroup {
-  head: PracticeWord
+  head?: PracticeWord
+  label?: string
   words: PracticeWord[]
+}
+
+export interface FamilyMember extends PracticeWord {
+  image: string
+}
+
+// One parent's side of the family: grandparents, the parent's brothers and sisters, and the parent.
+export interface FamilySide {
+  label: string
+  grandparents: FamilyMember[]
+  relatives: FamilyMember[]
+  parent: FamilyMember
+}
+
+export interface FamilyTree {
+  title: PracticeWord
+  sides: FamilySide[]
+  children: FamilyMember[]
 }
 
 export interface PracticeSection {
@@ -41,11 +60,14 @@ export interface Lesson {
   pinyin: string
   english: string
   scenes: DialogueScene[]
+  familyTree?: FamilyTree
   practice?: PracticeSection[]
 }
 
 const line = (speaker: string, hanzi: string, pinyin: string, english: string): DialogueLine => ({ speaker, hanzi, pinyin, english })
 const word = (hanzi: string, pinyin: string, english: string): PracticeWord => ({ hanzi, pinyin, english })
+const member = (hanzi: string, pinyin: string, english: string, image: string): FamilyMember =>
+  ({ hanzi, pinyin, english, image: `/images/family/${image}.png` })
 
 export const bookTitle = (book: number) => `我會說華語 ${book}`
 
@@ -164,6 +186,140 @@ export const lessons: Lesson[] = [
     ],
   },
   {
+    id: 'book1-3',
+    book: 1,
+    number: 3,
+    title: '我的家',
+    pinyin: 'wǒ de jiā',
+    english: 'My family',
+    scenes: [
+      {
+        title: 'Talking about our families',
+        lines: [
+          line('同學', '請問，你家有幾個人？', 'Qǐngwèn, nǐ jiā yǒu jǐ ge rén?', 'How many people are there in your family?'),
+          line('朋友', '我家有五個人。（我家有）爸爸、媽媽、弟弟、妹妹和我。我是老大。', 'Wǒ jiā yǒu wǔ ge rén. (Wǒ jiā yǒu) Bàba, māma, dìdi, mèimei hàn wǒ. Wǒ shì lǎodà.', 'There are five people in my family: my dad, mom, brother, sister and I. I am the first-born.'),
+          line('同學', '你有幾個叔叔？', 'Nǐ yǒu jǐ ge shúshu?', 'How many uncles do you have?'),
+          line('朋友', '（我）（有）一個（叔叔）。', '(Wǒ) (yǒu) yí ge (shúshu).', 'I have one.'),
+          line('同學', '（你）（有）幾個姑姑？', '(Nǐ) (yǒu) jǐ ge gūgu?', 'How many aunts do you have?'),
+          line('朋友', '我沒有姑姑。', 'Wǒ méiyǒu gūgu.', 'I don\'t have any aunts.'),
+        ],
+      },
+    ],
+    familyTree: {
+      title: word('親屬稱謂', 'qīnshǔ chēngwèi', 'what to call your relatives'),
+      sides: [
+        {
+          label: 'Dad\'s side',
+          grandparents: [
+            member('爺爺', 'yéye', 'grandfather (dad\'s father)', 'yeye'),
+            member('奶奶', 'nǎinai', 'grandmother (dad\'s mother)', 'nainai'),
+          ],
+          relatives: [
+            member('伯伯', 'bóbo', 'uncle (older than your father)', 'bobo'),
+            member('叔叔', 'shúshu', 'uncle (younger than your father)', 'shushu'),
+            member('姑姑', 'gūgu', 'aunt (father\'s sister)', 'gugu'),
+          ],
+          parent: member('爸爸', 'bàba', 'dad', 'baba'),
+        },
+        {
+          label: 'Mom\'s side',
+          grandparents: [
+            member('外公', 'wàigōng', 'grandfather (mom\'s father)', 'waigong'),
+            member('外婆', 'wàipó', 'grandmother (mom\'s mother)', 'waipo'),
+          ],
+          relatives: [
+            member('舅舅', 'jiùjiu', 'uncle (mother\'s brother)', 'jiujiu'),
+            member('阿姨', 'āyí', 'aunt (mother\'s sister)', 'ayi'),
+          ],
+          parent: member('媽媽', 'māma', 'mom', 'mama'),
+        },
+      ],
+      children: [
+        member('哥哥', 'gēge', 'older brother', 'gege'),
+        member('姐姐', 'jiějie', 'older sister', 'jiejie'),
+        member('我', 'wǒ', 'I, me', 'wo'),
+        member('弟弟', 'dìdi', 'younger brother', 'didi'),
+        member('妹妹', 'mèimei', 'younger sister', 'meimei'),
+      ],
+    },
+    practice: [
+      {
+        title: '情境練習',
+        english: 'Situational practice',
+        description: 'Describe your own family: swap in the right number, family members and birth order.',
+        examples: [
+          word('我家有七個人，爺爺、奶奶、爸爸、媽媽、姐姐、哥哥和我。我是老么。', 'Wǒ jiā yǒu qī ge rén, yéye, nǎinai, bàba, māma, jiějie, gēge hàn wǒ. Wǒ shì lǎoyāo.', 'There are seven people in my family: my grandfather, grandmother, dad, mom, sister, brother and I. I am the youngest.'),
+        ],
+        groups: [
+          {
+            head: word('數字', 'shùzì', 'numbers'),
+            words: [
+              word('一', 'yī', 'one'),
+              word('二', 'èr', 'two'),
+              word('三', 'sān', 'three'),
+              word('四', 'sì', 'four'),
+              word('五', 'wǔ', 'five'),
+              word('六', 'liù', 'six'),
+              word('七', 'qī', 'seven'),
+              word('八', 'bā', 'eight'),
+              word('九', 'jiǔ', 'nine'),
+              word('十', 'shí', 'ten'),
+            ],
+          },
+          {
+            head: word('排行', 'páiháng', 'birth order'),
+            words: [
+              word('老大', 'lǎodà', 'first-born, eldest child'),
+              word('老二', 'lǎo\'èr', 'second-born'),
+              word('老三', 'lǎosān', 'third-born'),
+              word('老四', 'lǎosì', 'fourth-born'),
+              word('老五', 'lǎowǔ', 'fifth-born'),
+              word('老么', 'lǎoyāo', 'youngest child'),
+            ],
+          },
+        ],
+      },
+      {
+        title: '語音練習',
+        english: 'Pronunciation: neutral tone',
+        description: 'Most family words repeat a character, and the second one is neutral tone: short, light and unstressed. Practise it after each of the four tones.',
+        groups: [
+          {
+            label: '1st tone + neutral  ˉ + ·',
+            words: [
+              word('媽媽', 'māma', 'mother'),
+              word('哥哥', 'gēge', 'older brother'),
+              word('姑姑', 'gūgu', 'aunt (father\'s sister)'),
+            ],
+          },
+          {
+            label: '2nd tone + neutral  ˊ + ·',
+            words: [
+              word('爺爺', 'yéye', 'grandfather'),
+              word('伯伯', 'bóbo', 'uncle (older than your father)'),
+              word('叔叔', 'shúshu', 'uncle (younger than your father)'),
+            ],
+          },
+          {
+            label: '3rd tone + neutral  ˇ + ·',
+            words: [
+              word('姐姐', 'jiějie', 'older sister'),
+              word('嬸嬸', 'shěnshen', 'aunt (wife of your father\'s younger brother)'),
+            ],
+          },
+          {
+            label: '4th tone + neutral  ˋ + ·',
+            words: [
+              word('爸爸', 'bàba', 'father'),
+              word('舅舅', 'jiùjiu', 'uncle (mother\'s brother)'),
+              word('弟弟', 'dìdi', 'younger brother'),
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: 'book2-1',
     book: 2,
     number: 1,
@@ -208,6 +364,7 @@ export const speakerNames: Record<string, string> = {
   朋友: 'friend',
   服務生: 'waiter',
   客人: 'customer',
+  同學: 'classmate',
   家明: 'Jiaming',
   安妮: 'Annie',
 }

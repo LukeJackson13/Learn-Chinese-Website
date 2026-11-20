@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
-import { bookTitle, lessons, speakerNames, type DialogueScene, type PracticeSection, type PracticeWord } from '../data/lessons'
+import {
+  bookTitle, lessons, speakerNames,
+  type DialogueScene, type FamilyMember, type FamilyTree, type PracticeSection, type PracticeWord,
+} from '../data/lessons'
 import { speak, stopSpeaking } from '../speech'
 import { NotFound } from './NotFound'
 
@@ -61,10 +64,19 @@ function Scene({ scene, index, playback }: { scene: DialogueScene; index: number
   )
 }
 
-function WordTile({ word, item, playback, head }: { word: PracticeWord; item: PlayItem; playback: Playback; head?: boolean }) {
+interface WordTileProps {
+  word: PracticeWord
+  item: PlayItem
+  playback: Playback
+  head?: boolean
+  image?: string
+}
+
+function WordTile({ word, item, playback, head, image }: WordTileProps) {
   return (
-    <div className={`word-tile${head ? ' word-tile-head' : ''}${playback.playingKey === item.key ? ' is-playing' : ''}`}>
+    <div className={`word-tile${head ? ' word-tile-head' : ''}${image ? ' word-tile-person' : ''}${playback.playingKey === item.key ? ' is-playing' : ''}`}>
       <button type="button" className="word-tile-play" onClick={() => playback.playOne(item, NORMAL_RATE)} aria-label={`Play ${word.hanzi}, ${word.english}`}>
+        {image && <img className="word-tile-img" src={image} alt="" loading="lazy" />}
         <span className="hanzi word-tile-hanzi">{word.hanzi}</span>
         {playback.showPinyin && <span className="pinyin">{word.pinyin}</span>}
         {playback.showEnglish && <span className="small muted">{word.english}</span>}
@@ -87,13 +99,15 @@ function Practice({ section, index, playback }: { section: PracticeSection; inde
       <div className="grid grid-2">
         {section.groups.map((g, gi) => {
           const prefix = `p${index}-g${gi}`
-          const headItem = { key: `${prefix}-head`, text: g.head.hanzi }
+          const headItem = g.head ? { key: `${prefix}-head`, text: g.head.hanzi } : null
           const items = g.words.map((w, wi) => ({ key: `${prefix}-${wi}`, text: w.hanzi }))
           return (
             <div key={gi} className="card word-group">
               <div className="word-group-head">
-                <WordTile word={g.head} item={headItem} playback={playback} head />
-                <PlayListButton listKey={prefix} items={[headItem, ...items]} playback={playback} />
+                {g.head && headItem
+                  ? <WordTile word={g.head} item={headItem} playback={playback} head />
+                  : <h3 className="card-title word-group-label">{g.label}</h3>}
+                <PlayListButton listKey={prefix} items={headItem ? [headItem, ...items] : items} playback={playback} />
               </div>
               <div className="word-tiles">
                 {g.words.map((w, wi) => <WordTile key={wi} word={w} item={items[wi]} playback={playback} />)}
@@ -101,6 +115,61 @@ function Practice({ section, index, playback }: { section: PracticeSection; inde
             </div>
           )
         })}
+      </div>
+    </section>
+  )
+}
+
+function People({ members, keyPrefix, playback }: { members: FamilyMember[]; keyPrefix: string; playback: Playback }) {
+  return (
+    <div className="family-row">
+      {members.map((m, i) => (
+        <WordTile key={m.hanzi} word={m} image={m.image} item={{ key: `${keyPrefix}-${i}`, text: m.hanzi }} playback={playback} />
+      ))}
+    </div>
+  )
+}
+
+function FamilyTreeView({ tree, playback }: { tree: FamilyTree; playback: Playback }) {
+  const toItems = (members: FamilyMember[], keyPrefix: string) => members.map((m, i) => ({ key: `${keyPrefix}-${i}`, text: m.hanzi }))
+  return (
+    <section>
+      <h2 className="section-title"><span className="hanzi">{tree.title.hanzi}</span> · Family tree</h2>
+      <p className="muted">
+        <span className="hanzi">{tree.title.hanzi}</span> <span className="pinyin">{tree.title.pinyin}</span> means {tree.title.english}.
+        Chinese has a different word for each relative, depending on whether they're on your dad's or mom's side and whether they're
+        older or younger. Click anyone to hear their title.
+      </p>
+      <div className="grid grid-2">
+        {tree.sides.map((side, si) => {
+          const prefix = `tree${si}`
+          const items = [
+            ...toItems(side.grandparents, `${prefix}-g`),
+            ...toItems(side.relatives, `${prefix}-r`),
+            ...toItems([side.parent], `${prefix}-p`),
+          ]
+          return (
+            <div key={side.label} className="card family-side">
+              <div className="section-head">
+                <h3 className="card-title">{side.label}</h3>
+                <PlayListButton listKey={prefix} items={items} playback={playback} />
+              </div>
+              <p className="eyebrow">Grandparents</p>
+              <People members={side.grandparents} keyPrefix={`${prefix}-g`} playback={playback} />
+              <p className="eyebrow">Their children: {side.parent.english}'s brothers and sisters</p>
+              <People members={side.relatives} keyPrefix={`${prefix}-r`} playback={playback} />
+              <p className="eyebrow">Your {side.parent.english}</p>
+              <People members={[side.parent]} keyPrefix={`${prefix}-p`} playback={playback} />
+            </div>
+          )
+        })}
+      </div>
+      <div className="card family-side">
+        <div className="section-head">
+          <h3 className="card-title">You, your brothers and your sisters</h3>
+          <PlayListButton listKey="tree-children" items={toItems(tree.children, 'tree-c')} playback={playback} />
+        </div>
+        <People members={tree.children} keyPrefix="tree-c" playback={playback} />
       </div>
     </section>
   )
@@ -179,6 +248,8 @@ export function LessonPage() {
 
       <h2 className="section-title"><span className="hanzi">情境對話</span> · Dialogue</h2>
       {lesson.scenes.map((scene, i) => <Scene key={scene.title} scene={scene} index={i} playback={playback} />)}
+
+      {lesson.familyTree && <FamilyTreeView tree={lesson.familyTree} playback={playback} />}
 
       {lesson.practice?.map((section, i) => <Practice key={section.title} section={section} index={i} playback={playback} />)}
 

@@ -10,7 +10,10 @@ export function Lessons() {
       <div className="grid grid-2">
         {lessons.map(l => {
           const lineCount = l.scenes.reduce((n, s) => n + s.lines.length, 0)
-          const wordCount = (l.practice ?? []).reduce((n, p) => n + p.groups.reduce((m, g) => m + g.words.length + 1, 0), 0)
+          const treeCount = l.familyTree
+            ? l.familyTree.children.length + l.familyTree.sides.reduce((n, s) => n + s.grandparents.length + s.relatives.length + 1, 0)
+            : 0
+          const wordCount = treeCount + (l.practice ?? []).reduce((n, p) => n + p.groups.reduce((m, g) => m + g.words.length + (g.head ? 1 : 0), 0), 0)
           return (
             <Link key={l.id} to={`/lessons/${l.id}`} className="card link-card">
               <span className="link-card-icon" aria-hidden="true">{l.number}</span>
