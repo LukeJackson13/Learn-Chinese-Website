@@ -32,14 +32,14 @@ function PlayListButton({ listKey, items, playback }: { listKey: string; items: 
     : <button type="button" className="btn btn-sm btn-primary" onClick={() => playback.playList(listKey, items)}>▶ Play all</button>
 }
 
-function Scene({ scene, index, playback }: { scene: DialogueScene; index: number; playback: Playback }) {
+function Scene({ scene, id, number, playback }: { scene: DialogueScene; id: string; number: number; playback: Playback }) {
   const firstSpeaker = scene.lines[0].speaker
-  const items = scene.lines.map((l, i) => ({ key: `scene${index}-${i}`, text: l.hanzi }))
+  const items = scene.lines.map((l, i) => ({ key: `${id}-${i}`, text: l.hanzi }))
   return (
     <section className="card dialogue">
       <div className="section-head">
-        <h3 className="card-title">{index + 1}. {scene.title}</h3>
-        <PlayListButton listKey={`scene${index}`} items={items} playback={playback} />
+        <h3 className="card-title">{number}. {scene.title}</h3>
+        <PlayListButton listKey={id} items={items} playback={playback} />
       </div>
       <ol className="dialogue-lines">
         {scene.lines.map((l, i) => (
@@ -96,6 +96,11 @@ function Practice({ section, index, playback }: { section: PracticeSection; inde
           <WordTile word={e} item={{ key: `p${index}-ex${i}`, text: e.hanzi }} playback={playback} />
         </div>
       ))}
+      {section.scenes && (
+        <div className="grid grid-2">
+          {section.scenes.map((scene, i) => <Scene key={scene.title} scene={scene} id={`p${index}-scene${i}`} number={i + 1} playback={playback} />)}
+        </div>
+      )}
       <div className="grid grid-2">
         {section.groups.map((g, gi) => {
           const prefix = `p${index}-g${gi}`
@@ -247,7 +252,7 @@ export function LessonPage() {
       </div>
 
       <h2 className="section-title"><span className="hanzi">情境對話</span> · Dialogue</h2>
-      {lesson.scenes.map((scene, i) => <Scene key={scene.title} scene={scene} index={i} playback={playback} />)}
+      {lesson.scenes.map((scene, i) => <Scene key={scene.title} scene={scene} id={`scene${i}`} number={i + 1} playback={playback} />)}
 
       {lesson.familyTree && <FamilyTreeView tree={lesson.familyTree} playback={playback} />}
 

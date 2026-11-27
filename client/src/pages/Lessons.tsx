@@ -9,7 +9,8 @@ export function Lessons() {
 
       <div className="grid grid-2">
         {lessons.map(l => {
-          const lineCount = l.scenes.reduce((n, s) => n + s.lines.length, 0)
+          const scenes = [...l.scenes, ...(l.practice ?? []).flatMap(p => p.scenes ?? [])]
+          const lineCount = scenes.reduce((n, s) => n + s.lines.length, 0)
           const treeCount = l.familyTree
             ? l.familyTree.children.length + l.familyTree.sides.reduce((n, s) => n + s.grandparents.length + s.relatives.length + 1, 0)
             : 0
@@ -21,7 +22,7 @@ export function Lessons() {
                 <span className="link-card-title"><span className="hanzi">{l.title}</span> · {l.english}</span>
                 <span className="small muted"><span className="hanzi">{bookTitle(l.book)}</span>, Lesson {l.number}</span>
                 <span className="small muted">
-                  {l.scenes.length} {l.scenes.length === 1 ? 'dialogue' : 'dialogues'} · {lineCount} lines
+                  {scenes.length} {scenes.length === 1 ? 'dialogue' : 'dialogues'} · {lineCount} lines
                   {wordCount > 0 && ` · ${wordCount} practice words`}
                 </span>
               </span>

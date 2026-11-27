@@ -49,6 +49,7 @@ export interface PracticeSection {
   english: string
   description: string
   examples?: PracticeWord[]
+  scenes?: DialogueScene[]
   groups: WordGroup[]
 }
 
@@ -314,6 +315,178 @@ export const lessons: Lesson[] = [
               word('舅舅', 'jiùjiu', 'uncle (mother\'s brother)'),
               word('弟弟', 'dìdi', 'younger brother'),
             ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'book1-4',
+    book: 1,
+    number: 4,
+    title: '跟朋友打招呼',
+    pinyin: 'gēn péngyǒu dǎ zhāohū',
+    english: 'Greeting friends',
+    scenes: [
+      {
+        title: 'Have you eaten?',
+        lines: [
+          line('同學', '你吃飯了嗎？', 'Nǐ chīfànle ma?', 'Have you eaten?'),
+          line('朋友', '還沒。', 'Hái méi.', 'Not yet.'),
+          line('同學', '要不要一起去吃？', 'Yào bú yào yìqǐ qù chī?', 'Do you want to get something to eat with me?'),
+          line('朋友', '好啊！', 'Hǎo a!', 'Sure!'),
+        ],
+      },
+    ],
+    practice: [
+      {
+        title: '情境練習',
+        english: 'Situational practice',
+        description: 'The same greeting works for anything: swap a word from 吃, 買 or 看 into 你…了嗎？ and 要不要一起去…？',
+        scenes: [
+          {
+            title: 'Buying a book',
+            lines: [
+              line('A', '你買書了嗎？', 'Nǐ mǎi shū le ma?', 'Have you bought the book?'),
+              line('B', '還沒。', 'Hái méi.', 'Not yet.'),
+              line('A', '要不要一起去買？', 'Yào bú yào yìqǐ qù mǎi?', 'Do you want to go and buy it together?'),
+              line('B', '好啊！', 'Hǎo a!', 'Sure!'),
+            ],
+          },
+          {
+            title: 'The book fair',
+            lines: [
+              line('A', '你看書展了嗎？', 'Nǐ kàn shūzhǎn le ma?', 'Have you been to the book fair?'),
+              line('B', '還沒。', 'Hái méi.', 'Not yet.'),
+              line('A', '要不要一起去看？', 'Yào bú yào yìqǐ qù kàn?', 'Do you want to go and visit it with me?'),
+              line('B', '好啊！', 'Hǎo a!', 'Sure!'),
+            ],
+          },
+          {
+            title: 'Signing up',
+            lines: [
+              line('A', '你報名了嗎？', 'Nǐ bàomíng le ma?', 'Have you signed up?'),
+              line('B', '還沒。', 'Hái méi.', 'Not yet.'),
+              line('A', '要不要一起去報？', 'Yào bú yào yìqǐ qù bào?', 'Do you want to go and sign up together?'),
+              line('B', '好啊！', 'Hǎo a!', 'Sure!'),
+            ],
+          },
+        ],
+        groups: [
+          {
+            head: word('吃', 'chī', 'to eat'),
+            words: [
+              word('飯', 'fàn', 'rice'),
+              word('麵', 'miàn', 'noodles'),
+              word('晚飯', 'wǎnfàn', 'dinner'),
+              word('早點', 'zǎodiǎn', 'breakfast'),
+              word('甜點', 'tiándiǎn', 'dessert'),
+              word('水果', 'shuǐguǒ', 'fruit'),
+            ],
+          },
+          {
+            head: word('買', 'mǎi', 'to buy'),
+            words: [
+              word('書', 'shū', 'book'),
+              word('牛奶', 'niúnǎi', 'milk'),
+              word('麵包', 'miànbāo', 'bread'),
+              word('手錶', 'shǒubiǎo', 'watch'),
+              word('機票', 'jīpiào', 'airplane ticket'),
+              word('電影票', 'diànyǐng piào', 'movie ticket'),
+            ],
+          },
+          {
+            head: word('看', 'kàn', 'to see; to watch'),
+            words: [
+              word('報紙', 'bàozhǐ', 'newspaper'),
+              word('球賽', 'qiúsài', 'ball game'),
+              word('表演', 'biǎoyǎn', 'performance'),
+              word('畫展', 'huàzhǎn', 'art exhibition'),
+              word('車展', 'chēzhǎn', 'car exhibition'),
+              word('電腦展', 'diànnǎo zhǎn', 'computer exhibition'),
+            ],
+          },
+        ],
+      },
+      {
+        title: '語音練習',
+        english: 'Pronunciation: f and h, u and ü',
+        description: '飯 fàn and 畫 huà practise the initials f (top teeth on the lower lip) and h (a breathy sound from the back of the throat). 不 bù and 去 qù practise the finals u and ü.',
+        groups: [
+          {
+            head: word('飯', 'fàn', 'meal; rice'),
+            words: [
+              word('吃飯', 'chīfàn', 'to eat'),
+              word('做飯', 'zuòfàn', 'to cook'),
+              word('炒飯', 'chǎofàn', 'fried rice'),
+              word('菜飯', 'cài fàn', 'steamed rice with minced vegetables'),
+              word('飯菜', 'fàncài', 'meal'),
+              word('滷肉飯', 'lǔròu fàn', 'stewed pork rice'),
+            ],
+          },
+          {
+            head: word('畫', 'huà', 'to paint; painting'),
+            words: [
+              word('繪畫', 'huìhuà', 'painting; to paint'),
+              word('圖畫', 'túhuà', 'picture; painting'),
+              word('畫圖', 'huàtú', 'to draw'),
+              word('畫畫', 'huàhuà', 'to paint'),
+              word('漫畫', 'mànhuà', 'comics'),
+              word('動畫', 'dònghuà', 'animation; cartoons'),
+            ],
+          },
+          {
+            head: word('不', 'bù / bú', 'no, not (bú before a 4th tone)'),
+            words: [
+              word('不去', 'bú qù', 'do not go'),
+              word('不好', 'bù hǎo', 'not good'),
+              word('不行', 'bù xíng', 'not acceptable'),
+              word('不能', 'bù néng', 'cannot'),
+              word('不可以', 'bù kěyǐ', 'may not'),
+              word('不吃', 'bù chī', 'do not eat'),
+            ],
+          },
+          {
+            head: word('去', 'qù', 'to go'),
+            words: [
+              word('去年', 'qùnián', 'last year'),
+              word('出去', 'chūqù', 'to go out'),
+              word('去旅行', 'qù lǚxíng', 'to travel'),
+              word('去學校', 'qù xuéxiào', 'to go to school'),
+              word('去醫院', 'qù yīyuàn', 'to go to the hospital'),
+              word('你要去哪裡？', 'Nǐ yào qù nǎlǐ?', 'Where are you going?'),
+            ],
+          },
+        ],
+      },
+      {
+        title: '漢語拼音延伸練習',
+        english: 'Pinyin practice: u or ü?',
+        description: 'Listen for the difference between u (lips rounded, "oo") and ü (say "ee", then round your lips). After j, q, x and y the dots are left off, so 去 qù and 需 xū are really ü sounds.',
+        groups: [
+          {
+            label: 'u after l and n',
+            words: [word('滷', 'lǔ', 'stew; braise'), word('路', 'lù', 'road'), word('努', 'nǔ', 'effort')],
+          },
+          {
+            label: 'ü after l and n',
+            words: [word('旅', 'lǚ', 'travel'), word('綠', 'lǜ', 'green'), word('女', 'nǚ', 'female')],
+          },
+          {
+            label: 'u after zh, ch, sh',
+            words: [word('竹', 'zhú', 'bamboo'), word('出', 'chū', 'to go out'), word('書', 'shū', 'book')],
+          },
+          {
+            label: 'ü after q, x, j (written u)',
+            words: [word('去', 'qù', 'to go'), word('需', 'xū', 'to need'), word('句', 'jù', 'sentence')],
+          },
+          {
+            label: 'wu: u on its own',
+            words: [word('無', 'wú', 'no; nothing'), word('五', 'wǔ', 'five'), word('霧', 'wù', 'mist; fog')],
+          },
+          {
+            label: 'yu: ü on its own',
+            words: [word('魚', 'yú', 'fish'), word('雨', 'yǔ', 'rain'), word('玉', 'yù', 'jade')],
           },
         ],
       },
