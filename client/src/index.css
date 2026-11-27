@@ -61,6 +61,7 @@ nav { display: flex; gap: 4px; flex-wrap: wrap; }
 .grid { display: grid; gap: 16px; margin-bottom: 16px; }
 .grid-2 { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
 .grid-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.grid-wide { grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); }
 .grid-5 { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
 .stack { display: grid; gap: 8px; }
 .stack-tight { display: grid; gap: 4px; }

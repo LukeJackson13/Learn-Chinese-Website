@@ -17,6 +17,8 @@ export interface PracticeWord {
   hanzi: string
   pinyin: string
   english: string
+  // What to send to the speech voice when it can't read `hanzi` itself: a common character with the same sound.
+  say?: string
 }
 
 // A headword (like 豬 zhū) and words built from it, a themed word list (like drinks), or a labelled drill.
@@ -466,7 +468,8 @@ export const lessons: Lesson[] = [
         groups: [
           {
             label: 'u after l and n',
-            words: [word('滷', 'lǔ', 'stew; braise'), word('路', 'lù', 'road'), word('努', 'nǔ', 'effort')],
+            // Some voices skip the rare 滷 on its own, so it's read as its homophone 魯 lǔ.
+            words: [{ ...word('滷', 'lǔ', 'stew; braise'), say: '魯' }, word('路', 'lù', 'road'), word('努', 'nǔ', 'effort')],
           },
           {
             label: 'ü after l and n',
@@ -487,6 +490,202 @@ export const lessons: Lesson[] = [
           {
             label: 'yu: ü on its own',
             words: [word('魚', 'yú', 'fish'), word('雨', 'yǔ', 'rain'), word('玉', 'yù', 'jade')],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'book1-5',
+    book: 1,
+    number: 5,
+    title: '禮貌用語',
+    pinyin: 'lǐmào yòngyǔ',
+    english: 'Polite expressions',
+    scenes: [
+      {
+        title: 'On a crowded train',
+        lines: [line('A', '對不起，借過一下。', 'Duìbùqǐ, jièguò yíxià.', 'Sorry, can I get by?')],
+      },
+      {
+        title: 'Asking the time',
+        lines: [line('A', '不好意思，請問現在幾點了？', 'Bùhǎoyìsi, qǐngwèn xiànzài jǐdiǎn le?', 'Excuse me, do you have the time?')],
+      },
+      {
+        title: 'In the lift',
+        lines: [line('A', '麻煩（你）幫我按一下十樓。', 'Máfán (nǐ) bāng wǒ àn yíxià shí lóu.', 'Could you press 10 for me?')],
+      },
+      {
+        title: 'Asking the way',
+        lines: [line('A', '對不起，請問郵局怎麼走？', 'Duìbùqǐ, qǐngwèn yóujú zěnme zǒu?', 'Excuse me, how do I get to the post office?')],
+      },
+    ],
+    practice: [
+      {
+        title: '情境練習',
+        english: 'Situational practice',
+        description: 'Ask the way to a different place, or ask someone to press a different floor.',
+        examples: [
+          word('對不起，請問圖書館怎麼走？', 'Duìbùqǐ, qǐngwèn túshūguǎn zěnme zǒu?', 'Excuse me, how do I get to the library?'),
+          word('麻煩（你）幫我按一下十樓。', 'Máfán (nǐ) bāng wǒ àn yíxià shí lóu.', 'Could you press 10 for me?'),
+        ],
+        groups: [
+          {
+            label: 'Places: 請問…怎麼走？',
+            words: [
+              word('圖書館', 'túshūguǎn', 'library'),
+              word('停車場', 'tíngchēchǎng', 'parking lot'),
+              word('捷運站', 'jiéyùn zhàn', 'MRT station'),
+              word('火車站', 'huǒchēzhàn', 'railway station'),
+              word('百貨公司', 'bǎihuò gōngsī', 'department store'),
+              word('超級市場', 'chāojíshìchǎng', 'supermarket'),
+            ],
+          },
+          {
+            label: 'Floors: 幫我按一下…',
+            words: [
+              word('一樓', 'yì lóu', 'first floor'),
+              word('二樓', 'èr lóu', 'second floor'),
+              word('三樓', 'sān lóu', 'third floor'),
+              word('四樓', 'sì lóu', 'fourth floor'),
+              word('五樓', 'wǔ lóu', 'fifth floor'),
+              word('地下一樓', 'dìxià yì lóu', '1st basement'),
+              word('地下二樓', 'dìxià èr lóu', '2nd basement'),
+            ],
+          },
+        ],
+      },
+      {
+        title: '語音練習',
+        english: 'Pronunciation: j q x and z c s',
+        description: '借 jiè, 去 qù and 下 xià practise j, q and x: the tongue lies flat with its tip behind the bottom teeth. 在 zài, 菜 cài and 思 sī practise z, c and s: the tongue tip touches behind the top teeth.',
+        groups: [
+          {
+            head: word('借', 'jiè', 'to lend; to borrow'),
+            words: [
+              word('借過', 'jièguò', 'to let someone pass'),
+              word('借錢', 'jiè qián', 'to borrow or lend money'),
+              word('借用', 'jièyòng', 'to borrow'),
+              word('借我', 'jiè wǒ', 'to lend me'),
+              word('不借', 'bú jiè', 'won\'t lend'),
+              word('借書', 'jiè shū', 'to borrow or lend a book'),
+            ],
+          },
+          {
+            head: word('去', 'qù', 'to go'),
+            words: [
+              word('上去', 'shàngqù', 'to go up'),
+              word('下去', 'xiàqù', 'to go down'),
+              word('回去', 'huíqù', 'to go back'),
+              word('走去', 'zǒuqù', 'to go (on foot)'),
+              word('過去', 'guòqù', 'to go over (away from the speaker)'),
+              word('進去', 'jìnqù', 'to go in'),
+            ],
+          },
+          {
+            head: word('下', 'xià', 'down'),
+            words: [
+              word('下車', 'xià chē', 'to get off (a bus or car)'),
+              word('下午', 'xiàwǔ', 'afternoon'),
+              word('下課', 'xiàkè', 'to finish class'),
+              word('下次', 'xiàcì', 'next time'),
+              word('下雨', 'xiàyǔ', 'to rain'),
+              word('下班', 'xiàbān', 'to finish work'),
+            ],
+          },
+          {
+            head: word('在', 'zài', 'to be at'),
+            words: [
+              word('不在', 'bú zài', 'to not be at'),
+              word('在家', 'zài jiā', 'to be at home'),
+              word('現在', 'xiànzài', 'now'),
+              word('在哪裡', 'zài nǎlǐ', 'where is…?'),
+              word('在這裡', 'zài zhèlǐ', 'to be here'),
+              word('在學校', 'zài xuéxiào', 'to be at school'),
+            ],
+          },
+          {
+            head: word('菜', 'cài', 'vegetable; dishes'),
+            words: [
+              word('飯菜', 'fàncài', 'meal'),
+              word('菜飯', 'càifàn', 'steamed rice with minced vegetables'),
+              word('叫菜', 'jiào cài', 'to order dishes'),
+              word('點菜', 'diǎn cài', 'to order food'),
+              word('上菜', 'shàngcài', 'to serve the dishes'),
+              word('炒菜', 'chǎocài', 'to stir-fry'),
+              word('燙青菜', 'tàng qīngcài', 'quick-boiled vegetables'),
+            ],
+          },
+          {
+            head: word('思', 'sī', 'to think'),
+            words: [
+              word('思想', 'sīxiǎng', 'thought'),
+              word('思考', 'sīkǎo', 'to consider'),
+              word('思念', 'sīniàn', 'to miss (someone or somewhere)'),
+              word('思維', 'sīwéi', 'thinking'),
+              word('反思', 'fǎnsī', 'to reflect'),
+              word('深思', 'shēnsī', 'deep thought'),
+            ],
+          },
+        ],
+      },
+      {
+        title: '漢語拼音延伸練習',
+        english: 'Pinyin practice: zi ci si or ji qi xi?',
+        description: 'The i sounds different in each row: after z, c and s it\'s a buzz (no "ee"); after j, q and x it\'s a clear "ee".',
+        groups: [
+          { label: 'z c s + i (a buzz)', words: [word('字', 'zì', 'word; character'), word('詞', 'cí', 'word'), word('絲', 'sī', 'silk')] },
+          { label: 'j q x + i ("ee")', words: [word('幾', 'jǐ', 'how much; how many'), word('起', 'qǐ', 'to start'), word('西', 'xī', 'west')] },
+        ],
+      },
+      {
+        title: '形似字比較',
+        english: 'Look-alike characters',
+        description: '不 and 下 look similar, and so do 找 and 我 (找 has an extra stroke on the left). Practise them side by side.',
+        groups: [
+          {
+            head: word('不', 'bù / bú', 'no, not'),
+            words: [
+              word('不去', 'bú qù', 'to not go'),
+              word('不來', 'bù lái', 'to not come'),
+              word('不好', 'bù hǎo', 'to be not good'),
+              word('不會', 'bú huì', 'to be unable to'),
+              word('不行', 'bùxíng', 'to not be doable'),
+              word('不可以', 'bù kěyǐ', 'to not be allowed to'),
+            ],
+          },
+          {
+            head: word('下', 'xià', 'below'),
+            words: [
+              word('下去', 'xiàqù', 'to go down'),
+              word('下來', 'xiàlái', 'to come down'),
+              word('下山', 'xiàshān', 'to go downhill'),
+              word('下雨', 'xiàyǔ', 'to rain'),
+              word('下車', 'xiàchē', 'to get out of a car'),
+              word('下棋', 'xiàqí', 'to play chess'),
+            ],
+          },
+          {
+            head: word('找', 'zhǎo', 'to look for'),
+            words: [
+              word('找人', 'zhǎo rén', 'to look for someone'),
+              word('找誰', 'zhǎo shéi', 'to look for whom'),
+              word('找他', 'zhǎo tā', 'to look for him / her'),
+              word('找爸爸', 'zhǎo bàba', 'to look for father'),
+              word('找媽媽', 'zhǎo māma', 'to look for mother'),
+              word('找不到', 'zhǎo bú dào', 'to be unable to find'),
+            ],
+          },
+          {
+            head: word('我', 'wǒ', 'I'),
+            words: [
+              word('我的', 'wǒ de', 'mine'),
+              word('我家', 'wǒ jiā', 'my home'),
+              word('我們', 'wǒmen', 'we, our'),
+              word('我爸爸', 'wǒ bàba', 'my father'),
+              word('我媽媽', 'wǒ māma', 'my mother'),
+              word('我的書', 'wǒ de shū', 'my book'),
+            ],
           },
         ],
       },

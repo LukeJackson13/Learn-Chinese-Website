@@ -16,6 +16,8 @@ interface PlayItem {
   text: string
 }
 
+const spoken = (word: PracticeWord) => word.say ?? word.hanzi
+
 interface Playback {
   playingKey: string | null
   runningList: string | null
@@ -93,7 +95,7 @@ function Practice({ section, index, playback }: { section: PracticeSection; inde
       <p className="muted">{section.description}</p>
       {section.examples?.map((e, i) => (
         <div key={i} className="card practice-example">
-          <WordTile word={e} item={{ key: `p${index}-ex${i}`, text: e.hanzi }} playback={playback} />
+          <WordTile word={e} item={{ key: `p${index}-ex${i}`, text: spoken(e) }} playback={playback} />
         </div>
       ))}
       {section.scenes && (
@@ -104,8 +106,8 @@ function Practice({ section, index, playback }: { section: PracticeSection; inde
       <div className="grid grid-2">
         {section.groups.map((g, gi) => {
           const prefix = `p${index}-g${gi}`
-          const headItem = g.head ? { key: `${prefix}-head`, text: g.head.hanzi } : null
-          const items = g.words.map((w, wi) => ({ key: `${prefix}-${wi}`, text: w.hanzi }))
+          const headItem = g.head ? { key: `${prefix}-head`, text: spoken(g.head) } : null
+          const items = g.words.map((w, wi) => ({ key: `${prefix}-${wi}`, text: spoken(w) }))
           return (
             <div key={gi} className="card word-group">
               <div className="word-group-head">
@@ -129,14 +131,14 @@ function People({ members, keyPrefix, playback }: { members: FamilyMember[]; key
   return (
     <div className="family-row">
       {members.map((m, i) => (
-        <WordTile key={m.hanzi} word={m} image={m.image} item={{ key: `${keyPrefix}-${i}`, text: m.hanzi }} playback={playback} />
+        <WordTile key={m.hanzi} word={m} image={m.image} item={{ key: `${keyPrefix}-${i}`, text: spoken(m) }} playback={playback} />
       ))}
     </div>
   )
 }
 
 function FamilyTreeView({ tree, playback }: { tree: FamilyTree; playback: Playback }) {
-  const toItems = (members: FamilyMember[], keyPrefix: string) => members.map((m, i) => ({ key: `${keyPrefix}-${i}`, text: m.hanzi }))
+  const toItems = (members: FamilyMember[], keyPrefix: string) => members.map((m, i) => ({ key: `${keyPrefix}-${i}`, text: spoken(m) }))
   return (
     <section>
       <h2 className="section-title"><span className="hanzi">{tree.title.hanzi}</span> · Family tree</h2>
@@ -252,7 +254,10 @@ export function LessonPage() {
       </div>
 
       <h2 className="section-title"><span className="hanzi">情境對話</span> · Dialogue</h2>
-      {lesson.scenes.map((scene, i) => <Scene key={scene.title} scene={scene} id={`scene${i}`} number={i + 1} playback={playback} />)}
+      {/* Several very short dialogues sit side by side instead of as a column of near-empty cards. */}
+      <div className={lesson.scenes.length > 1 && lesson.scenes.every(s => s.lines.length <= 2) ? 'grid grid-wide' : undefined}>
+        {lesson.scenes.map((scene, i) => <Scene key={scene.title} scene={scene} id={`scene${i}`} number={i + 1} playback={playback} />)}
+      </div>
 
       {lesson.familyTree && <FamilyTreeView tree={lesson.familyTree} playback={playback} />}
 
